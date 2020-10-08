@@ -10,6 +10,7 @@ const typeDefs = gql`
     id: ID!
     name: String
     username: String
+    karma: Int!
   }
 `;
 
@@ -44,12 +45,14 @@ const users = [
     id: "1",
     name: "Ada Lovelace",
     birthDate: "1815-12-10",
-    username: "@ada"
+    username: "@ada",
+    karma: 16
   },
   {
     id: "2",
     name: "Alan Turing",
     birthDate: "1912-06-23",
-    username: "@complete"
+    username: "@complete",
+    karma: 2
   }
 ];
