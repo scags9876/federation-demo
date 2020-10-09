@@ -1,22 +1,24 @@
 const { ApolloServer, gql } = require("apollo-server");
 const { buildFederatedSchema } = require("@apollo/federation");
+const { formatError } = require("graphql");
 
 const typeDefs = gql`
   type Review @key(fields: "id") {
     id: ID!
     body: String
-    author: User @provides(fields: "username")
+    author: User
     product: Product
   }
 
   extend type User @key(fields: "id") {
     id: ID! @external
-    username: String @external
+    karma: Int! @external
     reviews: [Review]
   }
 
   extend type Product @key(fields: "upc") {
     upc: String! @external
+    weight: Int @external
     reviews: [Review]
   }
 `;
@@ -24,17 +26,21 @@ const typeDefs = gql`
 const resolvers = {
   Review: {
     author(review) {
-      return { __typename: "User", id: review.authorID };
+      console.log("reviews.Review.author", review)
+      return { __typename: "User", id: review.authorID, karma: -1 };
     }
   },
   User: {
     reviews(user) {
+      console.log("Users.reviews ", user.id)
       return reviews.filter(review => review.authorID === user.id);
     },
     numberOfReviews(user) {
+      console.log("Users.numberOfReviews ", user.id)
       return reviews.filter(review => review.authorID === user.id).length;
     },
     username(user) {
+      console.log("Users.username ", user.id)
       const found = usernames.find(username => username.id === user.id);
       return found ? found.username : null;
     }

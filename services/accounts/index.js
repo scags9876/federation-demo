@@ -12,12 +12,31 @@ const typeDefs = gql`
     username: String
     karma: Int!
   }
+
+  extend type Product @key(fields: "upc") {
+    upc: String! @external
+    weight: Int @external
+  }
+
+  extend type Review @key(fields: "id") {
+    id: ID! @external
+    author: User @external
+    product: Product @external
+    importance: Int! @requires(fields: "author { id karma } product { upc weight }")
+  }
 `;
 
 const resolvers = {
   Query: {
     me() {
       return users[0];
+    }
+  },
+  Review: {
+    importance(review) {
+      console.log("accounts Review.importance", review)
+      const author = users.find(user => user.id === review.author.id);
+      return author.karma * review.product.weight
     }
   },
   User: {
